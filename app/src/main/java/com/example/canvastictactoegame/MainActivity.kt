@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,13 @@ fun TicTacToe(
     var center by remember {
         mutableStateOf(Offset.Unspecified)
     }
+    var arcPosition by remember {
+        mutableStateOf(Offset.Zero)
+    }
+
+    var symbolPosition by remember {
+        mutableStateOf(setNewGame())
+    }
 
 
     Canvas(
@@ -50,46 +59,127 @@ fun TicTacToe(
                             Toast
                                 .makeText(context, "Top left", Toast.LENGTH_SHORT)
                                 .show()
+//                            arcPosition = Offset(
+//                                x = 0f + (size.width / 3f) / 5f,
+//                                y = size.height / 5f + (size.height / 5f) / 5f
+//                            )
+                            if (symbolPosition[0][0] == '?') {
+                                symbolPosition = updateGameState(
+                                    symbolPosition, 0, 0, 'o'
+                                )
+                            }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
                             Toast
                                 .makeText(context, "Top mid", Toast.LENGTH_SHORT)
                                 .show()
+//                            arcPosition = Offset(
+//                                x = 0f + (size.width / 3f) / 5f + size.width / 3f,
+//                                y = size.height / 5f + (size.height / 5f) / 5f
+//                            )
+                            if (symbolPosition[0][1] == '?') {
+                                symbolPosition = updateGameState(
+                                    symbolPosition, 0, 1, 'o'
+                                )
+                            }
                         }
                         it.x > size.width * 2 / 3f && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
                             Toast
                                 .makeText(context, "Top right", Toast.LENGTH_SHORT)
                                 .show()
+//                            arcPosition = Offset(
+//                                x = 0f + (size.width / 3f) / 5f + size.width * 2 / 3f,
+//                                y = size.height / 5f + (size.height / 5f) / 5f
+//                            )
+                            if (symbolPosition[0][2] == '?') {
+                                symbolPosition = updateGameState(
+                                    symbolPosition, 0, 2, 'o'
+                                )
+                            }
                         }
                         it.x < size.width / 3f && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
                             Toast
                                 .makeText(context, "Mid left", Toast.LENGTH_SHORT)
                                 .show()
+//                            arcPosition = Offset(
+//                                x = 0f + (size.width / 3f) / 5f,
+//                                y = size.height * 2 / 5f + (size.height / 5f) / 5f
+//                            )
+                            if (symbolPosition[1][0] == '?') {
+                                symbolPosition = updateGameState(
+                                    symbolPosition, 1, 0, 'o'
+                                )
+                            }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
                             Toast
                                 .makeText(context, "Middle", Toast.LENGTH_SHORT)
                                 .show()
+//                            arcPosition = Offset(
+//                                x = 0f + (size.width / 3f) / 5f + size.width / 3f,
+//                                y = size.height * 2 / 5f + (size.height / 5f) / 5f
+//                            )
+                            if (symbolPosition[1][1] == '?') {
+                                symbolPosition = updateGameState(
+                                    symbolPosition, 1, 1, 'o'
+                                )
+                            }
                         }
                         it.x > size.width * 2 / 3f && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
                             Toast
                                 .makeText(context, "Mid right", Toast.LENGTH_SHORT)
                                 .show()
+//                            arcPosition = Offset(
+//                                x = 0f + (size.width / 3f) / 5f + size.width * 2 / 3f,
+//                                y = size.height * 2 / 5f + (size.height / 5f) / 5f
+//                            )
+                            if (symbolPosition[1][2] == '?') {
+                                symbolPosition = updateGameState(
+                                    symbolPosition, 1, 2, 'o'
+                                )
+                            }
                         }
                         it.x < size.width / 3f && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
                             Toast
                                 .makeText(context, "Bottom left", Toast.LENGTH_SHORT)
                                 .show()
+//                            arcPosition = Offset(
+//                                x = 0f + (size.width / 3f) / 5f,
+//                                y = size.height * 3 / 5f + (size.height / 5f) / 5f
+//                            )
+                            if (symbolPosition[2][0] == '?') {
+                                symbolPosition = updateGameState(
+                                    symbolPosition, 2, 0, 'o'
+                                )
+                            }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
                             Toast
                                 .makeText(context, "Bottom mid", Toast.LENGTH_SHORT)
                                 .show()
+//                            arcPosition = Offset(
+//                                x = 0f + (size.width / 3f) / 5f + size.width / 3f,
+//                                y = size.height * 3 / 5f + (size.height / 5f) / 5f
+//                            )
+                            if (symbolPosition[2][1] == '?') {
+                                symbolPosition = updateGameState(
+                                    symbolPosition, 2, 1, 'o'
+                                )
+                            }
                         }
                         it.x > size.width * 2 / 3f && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
                             Toast
                                 .makeText(context, "Bottom right", Toast.LENGTH_SHORT)
                                 .show()
+//                            arcPosition = Offset(
+//                                x = 0f + (size.width / 3f) / 5f + size.width * 2 / 3f,
+//                                y = size.height * 3 / 5f + (size.height / 5f) / 5f
+//                            )
+                            if (symbolPosition[2][2] == '?') {
+                                symbolPosition = updateGameState(
+                                    symbolPosition, 2, 2, 'o'
+                                )
+                            }
                         }
                     }
                 }
@@ -155,7 +245,66 @@ fun TicTacToe(
             cap = StrokeCap.Round
         )
 
+        val rectHeight = size.height / 5f
+        val rectWidth = size.width / 3f
+
+        symbolPosition.forEachIndexed { i, row ->
+            row.forEachIndexed { j, symbol ->
+                if (symbolPosition[i][j] != '?') {
+                    drawArc(
+                        color = Color.Green,
+                        startAngle = 0f,
+                        sweepAngle = 360f,
+                        useCenter = false,
+                        size = Size(
+                            width = rectHeight * 3 / 5f,
+                            height = rectWidth * 3 / 5f
+                        ),
+                        style = Stroke(
+                            width = 4.dp.toPx(),
+                            cap = StrokeCap.Round
+                        ),
+                        topLeft = Offset(
+                            x = (size.width / 3f) / 5f + size.width * j / 3f,
+                            y = size.height * (i + 1) / 5f + (size.height / 5f) / 5f
+                        )
+                    )
+                }
+            }
+        }
+
+        //DRAW ARC
+//        drawArc(
+//            color = Color.Green,
+//            startAngle = 0f,
+//            sweepAngle = 360f,
+//            useCenter = false,
+//            size = Size(
+//                width = rectHeight * 3 / 5f,
+//                height = rectWidth * 3 / 5f
+//            ),
+//            style = Stroke(
+//                width = 4.dp.toPx(),
+//                cap = StrokeCap.Round
+//            ),
+//            topLeft = arcPosition
+//        )
+
 
     }
+}
+
+private fun setNewGame(): Array<CharArray> {
+    return arrayOf(
+        charArrayOf('?', '?', '?'),
+        charArrayOf('?', '?', '?'),
+        charArrayOf('?', '?', '?')
+    )
+}
+
+private fun updateGameState(currentGameState: Array<CharArray>, i: Int, j: Int, symbol: Char): Array<CharArray> {
+    val gameStateCopy = currentGameState.copyOf()
+    gameStateCopy[i][j] = symbol
+    return gameStateCopy
 }
 
