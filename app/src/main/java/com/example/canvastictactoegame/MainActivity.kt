@@ -1,7 +1,6 @@
 package com.example.canvastictactoegame
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
@@ -13,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
@@ -33,15 +33,12 @@ fun TicTacToe(
 
 ) {
     val context = LocalContext.current
-    var center by remember {
-        mutableStateOf(Offset.Unspecified)
-    }
-    var arcPosition by remember {
-        mutableStateOf(Offset.Zero)
-    }
 
     var symbolPosition by remember {
         mutableStateOf(setNewGame())
+    }
+    var currentPlayer by remember {
+        mutableStateOf<Player>(Player.X)
     }
 
 
@@ -56,137 +53,81 @@ fun TicTacToe(
                 detectTapGestures {
                     when {
                         it.x < size.width / 3f && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
-                            Toast
-                                .makeText(context, "Top left", Toast.LENGTH_SHORT)
-                                .show()
-//                            arcPosition = Offset(
-//                                x = 0f + (size.width / 3f) / 5f,
-//                                y = size.height / 5f + (size.height / 5f) / 5f
-//                            )
                             if (symbolPosition[0][0] == '?') {
                                 symbolPosition = updateGameState(
-                                    symbolPosition, 0, 0, 'o'
+                                    symbolPosition, 0, 0, currentPlayer.symbol
                                 )
+                                currentPlayer = !currentPlayer
                             }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
-                            Toast
-                                .makeText(context, "Top mid", Toast.LENGTH_SHORT)
-                                .show()
-//                            arcPosition = Offset(
-//                                x = 0f + (size.width / 3f) / 5f + size.width / 3f,
-//                                y = size.height / 5f + (size.height / 5f) / 5f
-//                            )
                             if (symbolPosition[0][1] == '?') {
                                 symbolPosition = updateGameState(
-                                    symbolPosition, 0, 1, 'o'
+                                    symbolPosition, 0, 1, currentPlayer.symbol
                                 )
+                                currentPlayer = !currentPlayer
                             }
                         }
                         it.x > size.width * 2 / 3f && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
-                            Toast
-                                .makeText(context, "Top right", Toast.LENGTH_SHORT)
-                                .show()
-//                            arcPosition = Offset(
-//                                x = 0f + (size.width / 3f) / 5f + size.width * 2 / 3f,
-//                                y = size.height / 5f + (size.height / 5f) / 5f
-//                            )
                             if (symbolPosition[0][2] == '?') {
                                 symbolPosition = updateGameState(
-                                    symbolPosition, 0, 2, 'o'
+                                    symbolPosition, 0, 2, currentPlayer.symbol
                                 )
+                                currentPlayer = !currentPlayer
                             }
                         }
                         it.x < size.width / 3f && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
-                            Toast
-                                .makeText(context, "Mid left", Toast.LENGTH_SHORT)
-                                .show()
-//                            arcPosition = Offset(
-//                                x = 0f + (size.width / 3f) / 5f,
-//                                y = size.height * 2 / 5f + (size.height / 5f) / 5f
-//                            )
                             if (symbolPosition[1][0] == '?') {
                                 symbolPosition = updateGameState(
-                                    symbolPosition, 1, 0, 'o'
+                                    symbolPosition, 1, 0, currentPlayer.symbol
                                 )
+                                currentPlayer = !currentPlayer
                             }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
-                            Toast
-                                .makeText(context, "Middle", Toast.LENGTH_SHORT)
-                                .show()
-//                            arcPosition = Offset(
-//                                x = 0f + (size.width / 3f) / 5f + size.width / 3f,
-//                                y = size.height * 2 / 5f + (size.height / 5f) / 5f
-//                            )
                             if (symbolPosition[1][1] == '?') {
                                 symbolPosition = updateGameState(
-                                    symbolPosition, 1, 1, 'o'
+                                    symbolPosition, 1, 1, currentPlayer.symbol
                                 )
+                                currentPlayer = !currentPlayer
                             }
                         }
                         it.x > size.width * 2 / 3f && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
-                            Toast
-                                .makeText(context, "Mid right", Toast.LENGTH_SHORT)
-                                .show()
-//                            arcPosition = Offset(
-//                                x = 0f + (size.width / 3f) / 5f + size.width * 2 / 3f,
-//                                y = size.height * 2 / 5f + (size.height / 5f) / 5f
-//                            )
                             if (symbolPosition[1][2] == '?') {
                                 symbolPosition = updateGameState(
-                                    symbolPosition, 1, 2, 'o'
+                                    symbolPosition, 1, 2, currentPlayer.symbol
                                 )
+                                currentPlayer = !currentPlayer
                             }
                         }
                         it.x < size.width / 3f && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
-                            Toast
-                                .makeText(context, "Bottom left", Toast.LENGTH_SHORT)
-                                .show()
-//                            arcPosition = Offset(
-//                                x = 0f + (size.width / 3f) / 5f,
-//                                y = size.height * 3 / 5f + (size.height / 5f) / 5f
-//                            )
                             if (symbolPosition[2][0] == '?') {
                                 symbolPosition = updateGameState(
-                                    symbolPosition, 2, 0, 'o'
+                                    symbolPosition, 2, 0, currentPlayer.symbol
                                 )
+                                currentPlayer = !currentPlayer
                             }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
-                            Toast
-                                .makeText(context, "Bottom mid", Toast.LENGTH_SHORT)
-                                .show()
-//                            arcPosition = Offset(
-//                                x = 0f + (size.width / 3f) / 5f + size.width / 3f,
-//                                y = size.height * 3 / 5f + (size.height / 5f) / 5f
-//                            )
                             if (symbolPosition[2][1] == '?') {
                                 symbolPosition = updateGameState(
-                                    symbolPosition, 2, 1, 'o'
+                                    symbolPosition, 2, 1, currentPlayer.symbol
                                 )
+                                currentPlayer = !currentPlayer
                             }
                         }
                         it.x > size.width * 2 / 3f && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
-                            Toast
-                                .makeText(context, "Bottom right", Toast.LENGTH_SHORT)
-                                .show()
-//                            arcPosition = Offset(
-//                                x = 0f + (size.width / 3f) / 5f + size.width * 2 / 3f,
-//                                y = size.height * 3 / 5f + (size.height / 5f) / 5f
-//                            )
                             if (symbolPosition[2][2] == '?') {
                                 symbolPosition = updateGameState(
-                                    symbolPosition, 2, 2, 'o'
+                                    symbolPosition, 2, 2, currentPlayer.symbol
                                 )
+                                currentPlayer = !currentPlayer
                             }
                         }
                     }
                 }
             }
     ) {
-        center = this.center
-
         /* DRAW THE PLAYGROUND */
 
         drawLine(
@@ -251,44 +192,57 @@ fun TicTacToe(
         symbolPosition.forEachIndexed { i, row ->
             row.forEachIndexed { j, symbol ->
                 if (symbolPosition[i][j] != '?') {
-                    drawArc(
-                        color = Color.Green,
-                        startAngle = 0f,
-                        sweepAngle = 360f,
-                        useCenter = false,
-                        size = Size(
-                            width = rectHeight * 3 / 5f,
-                            height = rectWidth * 3 / 5f
-                        ),
-                        style = Stroke(
-                            width = 4.dp.toPx(),
-                            cap = StrokeCap.Round
-                        ),
-                        topLeft = Offset(
-                            x = (size.width / 3f) / 5f + size.width * j / 3f,
-                            y = size.height * (i + 1) / 5f + (size.height / 5f) / 5f
+                    if (symbol == Player.X.symbol) {
+                        val path = Path().apply {
+                            moveTo(
+                                x = (size.width / 3f) / 5f + size.width * j / 3f,
+                                y = size.height * (i + 1) / 5f + (size.height / 5f) / 5f
+                            )
+                            lineTo(
+                                x = ((size.width / 3f) - (size.width / 3f) / 5f) + size.width * j / 3f,
+                                y = ((size.height / 5f) - (size.height / 5f) / 5f) + size.height * (i + 1) / 5f
+                            )
+                            moveTo(
+                                x = ((size.width / 3f) - (size.width / 3f) / 5f) + size.width * j / 3f,
+                                y = size.height * (i + 1) / 5f + (size.height / 5f) / 5f
+                            )
+                            lineTo(
+                                x = (size.width / 3f) / 5f + size.width * j / 3f,
+                                y = ((size.height / 5f) - (size.height / 5f) / 5f) + size.height * (i + 1) / 5f
+                            )
+                        }
+
+                        drawPath(
+                            path = path,
+                            color = Color.Red,
+                            style = Stroke(
+                                width = 4.dp.toPx(),
+                                cap = StrokeCap.Round
+                            )
                         )
-                    )
+                    } else {
+                        drawArc(
+                            color = Color.Green,
+                            startAngle = 0f,
+                            sweepAngle = 360f,
+                            useCenter = false,
+                            size = Size(
+                                width = rectHeight * 3 / 5f,
+                                height = rectWidth * 3 / 5f
+                            ),
+                            style = Stroke(
+                                width = 4.dp.toPx(),
+                                cap = StrokeCap.Round
+                            ),
+                            topLeft = Offset(
+                                x = (size.width / 3f) / 5f + size.width * j / 3f,
+                                y = size.height * (i + 1) / 5f + (size.height / 5f) / 5f
+                            )
+                        )
+                    }
                 }
             }
         }
-
-        //DRAW ARC
-//        drawArc(
-//            color = Color.Green,
-//            startAngle = 0f,
-//            sweepAngle = 360f,
-//            useCenter = false,
-//            size = Size(
-//                width = rectHeight * 3 / 5f,
-//                height = rectWidth * 3 / 5f
-//            ),
-//            style = Stroke(
-//                width = 4.dp.toPx(),
-//                cap = StrokeCap.Round
-//            ),
-//            topLeft = arcPosition
-//        )
 
 
     }
@@ -302,9 +256,23 @@ private fun setNewGame(): Array<CharArray> {
     )
 }
 
-private fun updateGameState(currentGameState: Array<CharArray>, i: Int, j: Int, symbol: Char): Array<CharArray> {
+private fun updateGameState(
+    currentGameState: Array<CharArray>,
+    i: Int,
+    j: Int,
+    symbol: Char,
+): Array<CharArray> {
     val gameStateCopy = currentGameState.copyOf()
     gameStateCopy[i][j] = symbol
     return gameStateCopy
+}
+
+sealed class Player(val symbol: Char) {
+    object X : Player('x')
+    object O : Player('o')
+
+    operator fun not(): Player {
+        return if (this is X) O else X
+    }
 }
 
