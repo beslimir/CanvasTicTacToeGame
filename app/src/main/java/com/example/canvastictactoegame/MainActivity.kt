@@ -1,6 +1,7 @@
 package com.example.canvastictactoegame
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
@@ -34,7 +35,7 @@ fun TicTacToe(
 ) {
     val context = LocalContext.current
 
-    var symbolPosition by remember {
+    var gameState by remember {
         mutableStateOf(setNewGame())
     }
     var currentPlayer by remember {
@@ -53,76 +54,97 @@ fun TicTacToe(
                 detectTapGestures {
                     when {
                         it.x < size.width / 3f && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
-                            if (symbolPosition[0][0] == '?') {
-                                symbolPosition = updateGameState(
-                                    symbolPosition, 0, 0, currentPlayer.symbol
+                            if (gameState[0][0] == '?') {
+                                gameState = updateGameState(
+                                    gameState, 0, 0, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
                             }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
-                            if (symbolPosition[0][1] == '?') {
-                                symbolPosition = updateGameState(
-                                    symbolPosition, 0, 1, currentPlayer.symbol
+                            if (gameState[0][1] == '?') {
+                                gameState = updateGameState(
+                                    gameState, 0, 1, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
                             }
                         }
                         it.x > size.width * 2 / 3f && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
-                            if (symbolPosition[0][2] == '?') {
-                                symbolPosition = updateGameState(
-                                    symbolPosition, 0, 2, currentPlayer.symbol
+                            if (gameState[0][2] == '?') {
+                                gameState = updateGameState(
+                                    gameState, 0, 2, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
                             }
                         }
                         it.x < size.width / 3f && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
-                            if (symbolPosition[1][0] == '?') {
-                                symbolPosition = updateGameState(
-                                    symbolPosition, 1, 0, currentPlayer.symbol
+                            if (gameState[1][0] == '?') {
+                                gameState = updateGameState(
+                                    gameState, 1, 0, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
                             }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
-                            if (symbolPosition[1][1] == '?') {
-                                symbolPosition = updateGameState(
-                                    symbolPosition, 1, 1, currentPlayer.symbol
+                            if (gameState[1][1] == '?') {
+                                gameState = updateGameState(
+                                    gameState, 1, 1, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
                             }
                         }
                         it.x > size.width * 2 / 3f && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
-                            if (symbolPosition[1][2] == '?') {
-                                symbolPosition = updateGameState(
-                                    symbolPosition, 1, 2, currentPlayer.symbol
+                            if (gameState[1][2] == '?') {
+                                gameState = updateGameState(
+                                    gameState, 1, 2, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
                             }
                         }
                         it.x < size.width / 3f && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
-                            if (symbolPosition[2][0] == '?') {
-                                symbolPosition = updateGameState(
-                                    symbolPosition, 2, 0, currentPlayer.symbol
+                            if (gameState[2][0] == '?') {
+                                gameState = updateGameState(
+                                    gameState, 2, 0, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
                             }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
-                            if (symbolPosition[2][1] == '?') {
-                                symbolPosition = updateGameState(
-                                    symbolPosition, 2, 1, currentPlayer.symbol
+                            if (gameState[2][1] == '?') {
+                                gameState = updateGameState(
+                                    gameState, 2, 1, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
                             }
                         }
                         it.x > size.width * 2 / 3f && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
-                            if (symbolPosition[2][2] == '?') {
-                                symbolPosition = updateGameState(
-                                    symbolPosition, 2, 2, currentPlayer.symbol
+                            if (gameState[2][2] == '?') {
+                                gameState = updateGameState(
+                                    gameState, 2, 2, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
                             }
+                        }
+                    }
+
+                    //check the result of the game
+                    val isItDraw = gameState.all { row ->
+                        row.all { char ->
+                            char != '?'
+                        }
+                    }
+                    val playerXWin = whoIsTheWinner(gameState, Player.X)
+                    val playerOWin = whoIsTheWinner(gameState, Player.O)
+
+                    when {
+                        playerXWin -> {
+                            Toast.makeText(context, "Player X won!", Toast.LENGTH_SHORT).show()
+                        }
+                        playerOWin -> {
+                            Toast.makeText(context, "Player O won!", Toast.LENGTH_SHORT).show()
+                        }
+                        isItDraw -> {
+                            Toast.makeText(context, "It's a draw!", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -189,9 +211,9 @@ fun TicTacToe(
         val rectHeight = size.height / 5f
         val rectWidth = size.width / 3f
 
-        symbolPosition.forEachIndexed { i, row ->
+        gameState.forEachIndexed { i, row ->
             row.forEachIndexed { j, symbol ->
-                if (symbolPosition[i][j] != '?') {
+                if (gameState[i][j] != '?') {
                     if (symbol == Player.X.symbol) {
                         val path = Path().apply {
                             moveTo(
@@ -265,6 +287,39 @@ private fun updateGameState(
     val gameStateCopy = currentGameState.copyOf()
     gameStateCopy[i][j] = symbol
     return gameStateCopy
+}
+
+private fun whoIsTheWinner(gameState: Array<CharArray>, player: Player): Boolean {
+    val firstRow = gameState[0][0] == player.symbol &&
+            gameState[0][1] == player.symbol &&
+            gameState[0][2] == player.symbol
+    val secondRow = gameState[1][0] == player.symbol &&
+            gameState[1][1] == player.symbol &&
+            gameState[1][2] == player.symbol
+    val thirdRow = gameState[2][0] == player.symbol &&
+            gameState[2][1] == player.symbol &&
+            gameState[2][2] == player.symbol
+
+    val firstColumn = gameState[0][0] == player.symbol &&
+            gameState[1][0] == player.symbol &&
+            gameState[2][0] == player.symbol
+    val secondColumn = gameState[0][1] == player.symbol &&
+            gameState[1][1] == player.symbol &&
+            gameState[2][1] == player.symbol
+    val thirdColumn = gameState[0][2] == player.symbol &&
+            gameState[1][2] == player.symbol &&
+            gameState[2][2] == player.symbol
+
+    val firstDiagonal = gameState[0][0] == player.symbol &&
+            gameState[1][1] == player.symbol &&
+            gameState[2][2] == player.symbol
+    val secondDiagonal = gameState[0][2] == player.symbol &&
+            gameState[1][1] == player.symbol &&
+            gameState[2][0] == player.symbol
+
+    //if and only if one or more conditions are true, return true
+    return firstRow || secondRow || thirdRow || firstColumn || secondColumn || thirdColumn || firstDiagonal || secondDiagonal
+
 }
 
 sealed class Player(val symbol: Char) {
