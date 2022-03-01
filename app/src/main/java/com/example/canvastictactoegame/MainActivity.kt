@@ -1,5 +1,6 @@
 package com.example.canvastictactoegame
 
+import android.graphics.Paint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -16,9 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,9 +34,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TicTacToe(
-
-) {
+fun TicTacToe() {
     val context = LocalContext.current
 
     var gameState by remember {
@@ -41,6 +43,19 @@ fun TicTacToe(
     var currentPlayer by remember {
         mutableStateOf<Player>(Player.X)
     }
+
+    var pointsPlayerX by remember {
+        mutableStateOf(0)
+    }
+    var pointsPlayerO by remember {
+        mutableStateOf(0)
+    }
+
+    var isGameRunning by remember {
+        mutableStateOf(true)
+    }
+
+    val scope = rememberCoroutineScope()
 
 
     Canvas(
@@ -52,6 +67,9 @@ fun TicTacToe(
             )
             .pointerInput(true) {
                 detectTapGestures {
+                    if (!isGameRunning) {
+                        return@detectTapGestures
+                    }
                     when {
                         it.x < size.width / 3f && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
                             if (gameState[0][0] == '?') {
@@ -138,18 +156,96 @@ fun TicTacToe(
 
                     when {
                         playerXWin -> {
-                            Toast.makeText(context, "Player X won!", Toast.LENGTH_SHORT).show()
+                            Toast
+                                .makeText(context, "Player X won!", Toast.LENGTH_SHORT)
+                                .show()
+                            pointsPlayerX++
                         }
                         playerOWin -> {
-                            Toast.makeText(context, "Player O won!", Toast.LENGTH_SHORT).show()
+                            Toast
+                                .makeText(context, "Player O won!", Toast.LENGTH_SHORT)
+                                .show()
+                            pointsPlayerO++
                         }
                         isItDraw -> {
-                            Toast.makeText(context, "It's a draw!", Toast.LENGTH_SHORT).show()
+                            Toast
+                                .makeText(context, "It's a draw!", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+
+                    if (isItDraw || playerXWin || playerOWin) {
+                        scope.launch {
+                            isGameRunning = false
+                            delay(2000L)
+                            gameState = setNewGame()
+                            if (playerXWin) {
+                                currentPlayer = Player.O
+                            } else if (playerOWin) {
+                                currentPlayer = Player.X
+                            }
+                            isGameRunning = true
                         }
                     }
                 }
             }
     ) {
+
+        /* Draw text on native canvas */
+        val textPath = android.graphics.Path().apply {
+            moveTo(100f, 200f)
+            quadTo(size.width / 2f, 100f, size.width - 100f, 200f)
+        }
+        val playerXPath = android.graphics.Path().apply {
+            moveTo(0f, size.height * 4 / 5f + 100f)
+            quadTo(size.width / 4f,
+                size.height * 4 / 5f + 100f,
+                size.width / 2f,
+                size.height * 4 / 5f + 100f)
+        }
+        val playerOPath = android.graphics.Path().apply {
+            moveTo(size.width / 2f, size.height * 4 / 5f + 100f)
+            quadTo(size.width / 2f + size.width / 4f,
+                size.height * 4 / 5f + 100f,
+                size.width,
+                size.height * 4 / 5f + 100f)
+        }
+        drawContext.canvas.nativeCanvas.apply {
+            drawTextOnPath(
+                "Current on move: Player ${currentPlayer.symbol}",
+                textPath,
+                0f,
+                0f,
+                Paint().apply {
+                    color = android.graphics.Color.BLACK
+                    textSize = 70f
+                    textAlign = Paint.Align.CENTER
+                }
+            )
+
+            drawTextOnPath(
+                "Player X points: $pointsPlayerX",
+                playerXPath,
+                0f,
+                0f,
+                Paint().apply {
+                    color = android.graphics.Color.RED
+                    textSize = 50f
+                }
+            )
+            drawTextOnPath(
+                "Player O points: $pointsPlayerO",
+                playerOPath,
+                0f,
+                0f,
+                Paint().apply {
+                    color = android.graphics.Color.GREEN
+                    textSize = 50f
+                }
+            )
+        }
+
+
         /* DRAW THE PLAYGROUND */
 
         drawLine(
