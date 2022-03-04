@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,14 +16,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -56,6 +57,9 @@ fun TicTacToe() {
     }
 
     val scope = rememberCoroutineScope()
+    var animations = remember {
+        emptyAnimations()
+    }
 
 
     Canvas(
@@ -77,6 +81,7 @@ fun TicTacToe() {
                                     gameState, 0, 0, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
+                                scope.animate(animations[0][0])
                             }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
@@ -85,6 +90,7 @@ fun TicTacToe() {
                                     gameState, 0, 1, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
+                                scope.animate(animations[0][1])
                             }
                         }
                         it.x > size.width * 2 / 3f && (it.y < size.height * 2 / 5f && it.y > size.height / 5f) -> {
@@ -93,6 +99,7 @@ fun TicTacToe() {
                                     gameState, 0, 2, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
+                                scope.animate(animations[0][2])
                             }
                         }
                         it.x < size.width / 3f && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
@@ -101,6 +108,7 @@ fun TicTacToe() {
                                     gameState, 1, 0, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
+                                scope.animate(animations[1][0])
                             }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
@@ -109,6 +117,7 @@ fun TicTacToe() {
                                     gameState, 1, 1, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
+                                scope.animate(animations[1][1])
                             }
                         }
                         it.x > size.width * 2 / 3f && (it.y > size.height * 2 / 5f && it.y < size.height * 3 / 5f) -> {
@@ -117,6 +126,7 @@ fun TicTacToe() {
                                     gameState, 1, 2, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
+                                scope.animate(animations[1][2])
                             }
                         }
                         it.x < size.width / 3f && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
@@ -125,6 +135,7 @@ fun TicTacToe() {
                                     gameState, 2, 0, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
+                                scope.animate(animations[2][0])
                             }
                         }
                         (it.x > size.width / 3f && it.x < size.width * 2 / 3f) && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
@@ -133,6 +144,7 @@ fun TicTacToe() {
                                     gameState, 2, 1, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
+                                scope.animate(animations[2][1])
                             }
                         }
                         it.x > size.width * 2 / 3f && (it.y > size.height * 3 / 5f && it.y < size.height * 4 / 5f) -> {
@@ -141,6 +153,7 @@ fun TicTacToe() {
                                     gameState, 2, 2, currentPlayer.symbol
                                 )
                                 currentPlayer = !currentPlayer
+                                scope.animate(animations[2][2])
                             }
                         }
                     }
@@ -179,6 +192,7 @@ fun TicTacToe() {
                             isGameRunning = false
                             delay(2000L)
                             gameState = setNewGame()
+                            animations = emptyAnimations()
                             if (playerXWin) {
                                 currentPlayer = Player.O
                             } else if (playerOWin) {
@@ -311,7 +325,7 @@ fun TicTacToe() {
             row.forEachIndexed { j, symbol ->
                 if (gameState[i][j] != '?') {
                     if (symbol == Player.X.symbol) {
-                        val path = Path().apply {
+                        val path1 = Path().apply {
                             moveTo(
                                 x = (size.width / 3f) / 5f + size.width * j / 3f,
                                 y = size.height * (i + 1) / 5f + (size.height / 5f) / 5f
@@ -320,6 +334,8 @@ fun TicTacToe() {
                                 x = ((size.width / 3f) - (size.width / 3f) / 5f) + size.width * j / 3f,
                                 y = ((size.height / 5f) - (size.height / 5f) / 5f) + size.height * (i + 1) / 5f
                             )
+                        }
+                        val path2 = Path().apply {
                             moveTo(
                                 x = ((size.width / 3f) - (size.width / 3f) / 5f) + size.width * j / 3f,
                                 y = size.height * (i + 1) / 5f + (size.height / 5f) / 5f
@@ -330,8 +346,27 @@ fun TicTacToe() {
                             )
                         }
 
+                        val animatablePath1 = Path()
+                        PathMeasure().apply {
+                            setPath(path1, false)
+                            getSegment(0f, animations[i][j].value * length, animatablePath1)
+                        }
+                        val animatablePath2 = Path()
+                        PathMeasure().apply {
+                            setPath(path2, false)
+                            getSegment(0f, animations[i][j].value * length, animatablePath2)
+                        }
+
                         drawPath(
-                            path = path,
+                            path = animatablePath1,
+                            color = Color.Red,
+                            style = Stroke(
+                                width = 4.dp.toPx(),
+                                cap = StrokeCap.Round
+                            )
+                        )
+                        drawPath(
+                            path = animatablePath2,
                             color = Color.Red,
                             style = Stroke(
                                 width = 4.dp.toPx(),
@@ -342,7 +377,7 @@ fun TicTacToe() {
                         drawArc(
                             color = Color.Green,
                             startAngle = 0f,
-                            sweepAngle = 360f,
+                            sweepAngle = animations[i][j].value * 360f,
                             useCenter = false,
                             size = Size(
                                 width = rectHeight * 3 / 5f,
@@ -384,6 +419,30 @@ private fun updateGameState(
     gameStateCopy[i][j] = symbol
     return gameStateCopy
 }
+
+private fun emptyAnimations(): ArrayList<ArrayList<Animatable<Float, AnimationVector1D>>> {
+    val arrayList = arrayListOf<ArrayList<Animatable<Float, AnimationVector1D>>>()
+    for (i in 0..2) {
+        arrayList.add(arrayListOf())
+        for (j in 0..2) {
+            arrayList[i].add(Animatable(0f))
+        }
+    }
+
+    return arrayList
+}
+
+private fun CoroutineScope.animate(animatable: Animatable<Float, AnimationVector1D>) {
+    launch {
+        animatable.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = 500
+            )
+        )
+    }
+}
+
 
 private fun whoIsTheWinner(gameState: Array<CharArray>, player: Player): Boolean {
     val firstRow = gameState[0][0] == player.symbol &&
